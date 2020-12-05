@@ -6,7 +6,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        /* Necessary declarations but not all the information are filled up */
+        /* Necessary declarations but not all the information are filled up
+        * In the upcoming versions of the program all the constant data will be stored in .txt file and also be used from .txt file */
         Item root = new Item("Shovel", 1605, 1, 60, 1, 10);
         Tree tree = new Tree(root);
 
