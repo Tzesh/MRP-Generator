@@ -16,33 +16,22 @@ public class Tree {
     }
 
     public Node find(int id) {
-        if (root.getID() == id) {
-            return root;
-        } else {
-            return find(root, id);
-        }
+        if (root.getID() == id) return root;
+        else return find(root, id);
     }
 
     public Node find(Node node, int id) {
-
         Node sibling = node.firstChild;
-        while (sibling.nextSibling != null) {
-            if (sibling.getID() == id) {
-                return sibling;
-            } else {
-                sibling = sibling.nextSibling;
-            }
+        while (sibling != null) {
+            if (sibling.getID() == id) return sibling;
+            sibling = sibling.nextSibling;
         }
 
         sibling = node.firstChild;
-        while (sibling.nextSibling != null) {
-            if (sibling.hasChild()) {
-                find(sibling, id);
-            } else {
-                continue;
-            }
+        while (sibling != null) {
+            if (sibling.hasChild()) return find(sibling, id);
+            sibling = sibling.nextSibling;
         }
-
         return null;
     }
 

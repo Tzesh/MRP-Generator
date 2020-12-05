@@ -1,3 +1,5 @@
+import utils.Node;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ public class Item extends Node {
     int lotSizing; // lot sizing of item
 
     public Item(String name, int ID, int leadTime, int amount, int multiplier, int lotSizing) {
+        super(name, ID);
         this.name = name;
         this.ID = ID;
         this.leadTime = leadTime;
@@ -34,14 +37,14 @@ public class Item extends Node {
             }
             deliver(week, amount); // we have to deliver or produce this item by starting (week - leadTime)th week
         }
-        printMRP();
+        printMRPAndMoveOn();
     }
 
     public boolean isReady(int week, int amount) { // to check whether is given amount ready or not
         if (amount * multiplier < amount) return true; // we don't have to deal with required items to produce this item
         int required = this.amount - (multiplier * amount);
-        while (this.sibling != null) this.sibling.addDemand(week, amount);
-        while (this.child != null) return this.child.addDemand(week, amount);
+        //while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        //while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
         return false;
     }
 
@@ -50,11 +53,13 @@ public class Item extends Node {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
-        deliveries.put(week, amount); // we'll use this data in MRP
+        if (lotSizing == 0) deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
+        else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount : ((amount / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
     }
 
-    public void printMRP() {
+    public void printMRPAndMoveOn() {
         // prints out the MRP table according to given data
+        // produces another item in the tree
     }
 
 }

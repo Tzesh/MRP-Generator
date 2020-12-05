@@ -1,13 +1,12 @@
 package utils;
 
-import java.util.LinkedList;
 import java.util.Objects;
 
 public class Node {
 
+    public Node nextSibling;
     Node parent;
     Node firstChild;
-    Node nextSibling;
     String name;
     int ID;
 
@@ -61,19 +60,41 @@ public class Node {
     public void addChild(Node n) {
         if (!this.hasChild()) {
             this.firstChild = n;
-        } else {
-            Node sibling = this.firstChild;
-            while (sibling.nextSibling != null) {
-                sibling = sibling.nextSibling;
-            }
-
-            sibling.nextSibling = n;
+            return;
         }
+        Node sibling = this.firstChild.nextSibling;
+        Node prevSibling = this.firstChild;
+        if (sibling == null) {
+            prevSibling.nextSibling = n;
+            return;
+        }
+        while (sibling != null) {
+            prevSibling = prevSibling.nextSibling;
+            sibling = sibling.nextSibling;
+        }
+        prevSibling.nextSibling = n;
     }
 
     public int getID() {
         return this.ID;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return ID == node.ID &&
+                Objects.equals(parent, node.parent) &&
+                Objects.equals(firstChild, node.firstChild) &&
+                Objects.equals(nextSibling, node.nextSibling) &&
+                Objects.equals(name, node.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parent, firstChild, nextSibling, name, ID);
+    }
 }
 
