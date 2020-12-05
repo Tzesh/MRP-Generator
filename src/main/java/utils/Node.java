@@ -5,66 +5,30 @@ import java.util.Objects;
 
 public class Node {
 
-    private String itemName;
-    private int ID;
-    private Node parent;
-    private LinkedList<Node> children;
+    Node parent;
+    Node firstChild;
+    Node nextSibling;
+    String name;
+    int ID;
 
     public Node(String name, int ID) {
-        this.itemName = name;
+        this.parent = null;
+        this.firstChild = null;
+        this.nextSibling = null;
+        this.name = name;
         this.ID = ID;
-        this.children = new LinkedList<>();
     }
 
-    public int getID() {
-        return ID;
+    public Node getFirstChild() {
+        return firstChild;
     }
 
-    public LinkedList<Node> getChildren() {
-        return children;
+    public boolean hasChild() {
+        return firstChild != null;
     }
 
-    public Node getParent() {
-        return parent;
-    }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
-
-
-    public void addChild(Node node) {
-        node.setParent(this);
-        this.children.add(node);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof Node)) return false;
-        Node node = (Node) o;
-        return Objects.equals(itemName, node.itemName) &&
-                Objects.equals(parent, node.parent) &&
-                Objects.equals(children, node.children);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(itemName, parent, children);
-    }
-
-    public Node getChild(int id) {
-        for (Node n : this.children) {
-            if (n.getID() == id) {
-                return n;
-            }
-        }
-
-        return null;
-    }
-
-    public void removeChild(Node node) {
-        this.children.remove(node);
+    public String toString() {
+        return this.name + "(" + this.ID + ")";
     }
 
     public int findDepth() {
@@ -78,13 +42,38 @@ public class Node {
         return counter;
     }
 
-    public boolean hasChild() {
-        return this.children.size() > 0;
+    public Node getParent() {
+        return this.parent;
     }
 
-    @Override
-    public String toString() {
-        return this.itemName + "(" + this.ID + ")";
+    public Node getChild(int ID) {
+        Node sibling = this.firstChild;
+        while (sibling.nextSibling != null) {
+            if (sibling.getID() == ID) {
+                return sibling;
+            }
+            sibling = sibling.nextSibling;
+        }
+
+        return null;
     }
+
+    public void addChild(Node n) {
+        if (!this.hasChild()) {
+            this.firstChild = n;
+        } else {
+            Node sibling = this.firstChild;
+            while (sibling.nextSibling != null) {
+                sibling = sibling.nextSibling;
+            }
+
+            sibling.nextSibling = n;
+        }
+    }
+
+    public int getID() {
+        return this.ID;
+    }
+
 }
 

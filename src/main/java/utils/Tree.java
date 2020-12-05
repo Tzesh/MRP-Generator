@@ -24,18 +24,23 @@ public class Tree {
     }
 
     public Node find(Node node, int id) {
-        for (Node n : node.getChildren()) {
-            if (n.getID() == id) {
-                return n;
-            }
 
+        Node sibling = node.firstChild;
+        while (sibling.nextSibling != null) {
+            if (sibling.getID() == id) {
+                return sibling;
+            } else {
+                sibling = sibling.nextSibling;
+            }
         }
 
-        for (Node n : node.getChildren()) {
-            if(n.hasChild())
-                return find(n, id);
-            else
+        sibling = node.firstChild;
+        while (sibling.nextSibling != null) {
+            if (sibling.hasChild()) {
+                find(sibling, id);
+            } else {
                 continue;
+            }
         }
 
         return null;
