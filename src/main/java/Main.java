@@ -1,5 +1,4 @@
 import utils.Tree;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -31,6 +30,7 @@ public class Main {
         tree.find(314).addChild(new Item("Rivet", 14127, 0, 0, 0, 0));
 
         Scanner scanner = new Scanner(System.in);
+        Map<Integer, Integer> demands;
 
         System.out.println("Welcome to MRP Designer," +
                 "\nPlease enter demands according to weeks like given example below:" +
@@ -41,7 +41,6 @@ public class Main {
             String[] weeks = scanner.nextLine().split(" ");
             System.out.print("Quantities: ");
             String[] quantities = scanner.nextLine().split(" ");
-            Map<Integer, Integer> demands;
             try {
                 demands = setDemands(weeks, quantities);
             } catch (NumberFormatException exception) {
@@ -51,7 +50,8 @@ public class Main {
             if (isAppropriate(demands)) break;
         }
         System.out.println("Processes have begun");
-
+        setDemands(demands, root);
+        root.produce();
     }
 
     private static Map<Integer, Integer> setDemands(String[] weeks, String[] quantities) throws NumberFormatException {
@@ -59,6 +59,10 @@ public class Main {
         for (String week : weeks)
             for (String quantity : quantities) demands.put(Integer.parseInt(week), Integer.parseInt(quantity));
         return demands;
+    }
+
+    private static void setDemands(Map<Integer, Integer> demands, Item root) {
+        for (Integer week : demands.keySet()) root.addDemand(week, demands.get(week));
     }
 
     private static boolean isAppropriate(Map<Integer, Integer> demands) {

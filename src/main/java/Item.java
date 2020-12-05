@@ -27,25 +27,13 @@ public class Item extends Node {
         demand.put(week, amount);
     }
 
-    public void produce(Map<Integer, Integer> demand) { // we'll produce the item according to given demand information
-        for (int week : demand.keySet()) {
-            int amount = demand.get(week);
-            if (isReady(week, amount)) {
-                this.amount -= amount;
-                deliveries.put(week, 0);
-                continue; // we don't have to produce or deliver this item it's already in stock
-            }
+    public void produce() { // we'll produce the item according to given demand information
+        for (int week = 1; week <= 10; week++) {
+            int amount = Math.abs(this.amount - demand.get(week));
+            if (amount == 0) continue;
             deliver(week, amount); // we have to deliver or produce this item by starting (week - leadTime)th week
         }
         printMRPAndMoveOn();
-    }
-
-    public boolean isReady(int week, int amount) { // to check whether is given amount ready or not
-        if (amount * multiplier < amount) return true; // we don't have to deal with required items to produce this item
-        int required = this.amount - (multiplier * amount);
-        //while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        //while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        return false;
     }
 
     public void deliver(int week, int amount) { // to deliver items
@@ -53,6 +41,8 @@ public class Item extends Node {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
+        //while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        //while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
         if (lotSizing == 0) deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
         else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount : ((amount / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
     }
@@ -61,5 +51,4 @@ public class Item extends Node {
         // prints out the MRP table according to given data
         // produces another item in the tree
     }
-
 }
