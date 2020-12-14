@@ -1,11 +1,13 @@
-package utils;
+package edu.eskisehir.utils;
+
+import edu.eskisehir.inventory.Item;
 
 import java.util.Objects;
 
-public class Node {
+public class Node<T> {
 
-    public Node nextSibling;
-    Node firstChild;
+    public Node<T> nextSibling;
+    Node<T> firstChild;
     String name;
     int ID;
 
@@ -16,7 +18,7 @@ public class Node {
         this.ID = ID;
     }
 
-    public Node getFirstChild() {
+    public Node<T> getFirstChild() {
         return firstChild;
     }
 
@@ -28,8 +30,8 @@ public class Node {
         return this.name + "(" + this.ID + ")";
     }
 
-    public Node getChild(int ID) {
-        Node sibling = this.firstChild;
+    public Node<T> getChild(int ID) {
+        Node<T> sibling = this.firstChild;
         while (sibling.nextSibling != null) {
             if (sibling.getID() == ID) {
                 return sibling;
@@ -40,13 +42,13 @@ public class Node {
         return null;
     }
 
-    public void addChild(Node n) {
+    public void addChild(Node<T> n) {
         if (!this.hasChild()) {
             this.firstChild = n;
             return;
         }
-        Node sibling = this.firstChild.nextSibling;
-        Node prevSibling = this.firstChild;
+        Node<T> sibling = this.firstChild.nextSibling;
+        Node<T> prevSibling = this.firstChild;
         if (sibling == null) {
             prevSibling.nextSibling = n;
             return;
@@ -60,6 +62,13 @@ public class Node {
 
     public int getID() {
         return this.ID;
+    }
+
+    public void addDemand(int week, int amount) {
+        if (this instanceof Item) {
+            Item item = (Item)this;
+            item.addDemand(week, amount);
+        }
     }
 
 

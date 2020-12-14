@@ -1,9 +1,11 @@
-import utils.Node;
+package edu.eskisehir.inventory;
+
+import edu.eskisehir.utils.Node;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Item extends Node {
+public class Item extends Node<Item> {
     Map<Integer, Integer> demand = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
     Map<Integer, Integer> deliveries = new HashMap<>(); // deliveries needed to complete the item
     int ID; // item ID of the item
@@ -41,8 +43,8 @@ public class Item extends Node {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
-        //while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        //while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
         if (lotSizing == 0) deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
         else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount : ((amount / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
     }
