@@ -14,7 +14,7 @@ public class Item extends Node<Item> {
     int leadTime; // how many weeks will take to deliver
     int lotSizing; // lot sizing of item
 
-    public Item(String name, int ID, int leadTime, int multiplier, int lotSizing) {
+    public Item(int ID, String name, int leadTime, int lotSizing, int multiplier) {
         super(name, ID);
         this.name = name;
         this.ID = ID;
@@ -29,7 +29,11 @@ public class Item extends Node<Item> {
 
     public void produce() { // we'll produce the item according to given demand information
         for (int week = 1; week <= 10; week++) {
-            if (demands.get(week) == 0) continue;
+            if (Inventory.scheduledReceipts.get(week) != null) {
+                Inventory.amounts.put(ID, getAmount());
+                Inventory.scheduledReceipts.remove(week);
+            }
+            if (demands.get(week) == null) continue;
             if (getAmount() > demands.get(week)) {
                 Inventory.amounts.put(ID, getAmount() - demands.get(week));
                 continue;
@@ -57,7 +61,7 @@ public class Item extends Node<Item> {
     }
 
     private int getAmount() {
-        return Inventory.amounts.get(this.ID);
+        return Inventory.amounts.get(this.ID) == null ? 0 : Inventory.amounts.get(this.ID);
     }
 
     public void printMRPAndMoveOn() {

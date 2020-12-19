@@ -2,36 +2,58 @@ package edu.eskisehir.inventory;
 
 import edu.eskisehir.utils.Tree;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 public class InventoryManager {
 
     public InventoryManager(boolean isDefault) {
         if (!isDefault) return;
-        Item root = new Item("Shovel", 1605, 1, 60, 1); // we are starting to build our tree with the root item
-        Inventory.items = new Tree<>(root);
-        setDefaultItems();
+        try {
+            setDefaultItems();
+        } catch (IOException e) {
+            System.out.println("An unknown error has occurred.");
+        }
     }
     
-    private void setDefaultItems() {
-        Inventory.items.find(1605).addChild(new Item("Top Handle", 13122, 1, 0, 1));
-        Inventory.items.find(1605).addChild(new Item("Scoop-Shaft", 48, 3, 30, 1));
-        Inventory.items.find(1605).addChild(new Item("Shaft", 118, 2, 0, 1));
-        Inventory.items.find(1605).addChild(new Item("Nail", 62, 2, 50, 1));
-        Inventory.items.find(1605).addChild(new Item("Rivet", 14127, 1, 60, 4));
-        Inventory.items.find(1605).addChild(new Item("Scoop Assembly", 314, 1, 0, 1));
+    private void setDefaultItems() throws IOException {
+        Path path = Paths.get("items.txt");
+        if (!Files.exists(path)) {
+            System.out.println("'items.txt' could not be found in the directory of the program.\n" +
+                    "Please make sure you have 'items.txt' in the same folder of the program.");
+            System.exit(0);
+        }
+        List<String> lines = Files.readAllLines(path);
+        lines.forEach(line -> {
+            if (!line.contains("//") && line.length() != 0) {
+                String[] information = line.split(",  ");
+                //root-item-ID,  Item-ID,  Name of item,  Amount-on-Hand,  Scheduled-Receipt,  Arrival-on-week,  Lead-Time,  Lot-Sizing-Rule,  Multiplier
+                int rootID = Integer.parseInt(information[0]);
+                int itemID = Integer.parseInt(information[1]);
+                String name = information[2];
+                int amount = Integer.parseInt(information[3]);
+                int scheduledReceipt = Integer.parseInt(information[4]);
+                int arrivalOnWeek = Integer.parseInt(information[5]);
+                int leadTime = Integer.parseInt(information[6]);
+                int lotSizing = Integer.parseInt(information[7]);
+                int multiplier = Integer.parseInt(information[8]);
+                if (rootID == 0) {
+                    Item root = new Item(itemID, name, leadTime, lotSizing, multiplier);
+                    Inventory.amounts.put(itemID, amount);
+                    Inventory.scheduledReceipts.put(arrivalOnWeek, scheduledReceipt);
+                    Inventory.items = new Tree<>(root);
+                } else {
+                    Inventory.items.find(rootID).addChild(new Item(itemID, name, leadTime, lotSizing, multiplier));
+                    Inventory.amounts.put(itemID, amount);
+                    Inventory.scheduledReceipts.put(arrivalOnWeek, scheduledReceipt);
+                }
+            }
+        });
 
-        Inventory.items.find(13122).addChild(new Item("Top Handle", 457, 2, 0, 1));
-        Inventory.items.find(13122).addChild(new Item("Nail", 62, 2, 50, 2));
-        Inventory.items.find(13122).addChild(new Item("Bracelet", 11495, 1, 0, 0));
-
-        Inventory.items.find(11495).addChild(new Item("Top Handle", 129, 4, 0, 0));
-        Inventory.items.find(11495).addChild(new Item("Top Handle", 1118, 3, 30, 0));
-
-
-        Inventory.items.find(314).addChild(new Item("Scoop", 2142, 0, 0, 0));
-        Inventory.items.find(314).addChild(new Item("Blade", 19, 0, 0, 0));
-        Inventory.items.find(314).addChild(new Item("Rivet", 14127, 0, 0, 0));
     }
 
     public void setDemands(Map<Integer, Integer> demands) {
