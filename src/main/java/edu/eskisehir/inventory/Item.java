@@ -55,7 +55,7 @@ public class Item extends Node<Item> {
         }
         if (lotSizing == 0) deliveries.put(week - leadTime, amount * multiplier); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
         else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount * multiplier : ((amount * multiplier / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
-        if (Inventory.items.getRoot().equals(this)) return; // if the current node is not the root of the tree processes below are unnecessary
+        if (!Inventory.items.getRoot().equals(this)) return; // if the current node is not the root of the tree processes below are unnecessary
         while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
         while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
     }
