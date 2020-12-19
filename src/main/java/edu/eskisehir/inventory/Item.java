@@ -6,47 +6,58 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Item extends Node<Item> {
-    Map<Integer, Integer> demand = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
+    Map<Integer, Integer> demands = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
     Map<Integer, Integer> deliveries = new HashMap<>(); // deliveries needed to complete the item
     int ID; // item ID of the item
     String name; // name of the item
     int multiplier; // how many products need to be produced when our root item will be produced
     int leadTime; // how many weeks will take to deliver
-    int amount; // amount of item
     int lotSizing; // lot sizing of item
 
-    public Item(String name, int ID, int leadTime, int amount, int multiplier, int lotSizing) {
+    public Item(String name, int ID, int leadTime, int multiplier, int lotSizing) {
         super(name, ID);
         this.name = name;
         this.ID = ID;
         this.leadTime = leadTime;
-        this.amount = amount;
         this.multiplier = multiplier;
         this.lotSizing = lotSizing;
     }
 
     public void addDemand(int week, int amount) {
-        demand.put(week, amount);
+        demands.put(week, amount);
     }
 
     public void produce() { // we'll produce the item according to given demand information
         for (int week = 1; week <= 10; week++) {
-            int amount = Math.abs(this.amount - demand.get(week));
-            if (amount == 0) continue;
-            deliver(week, amount); // we have to deliver or produce this item by starting (week - leadTime)th week
+            if (demands.get(week) == 0) continue;
+            if (getAmount() > demands.get(week)) {
+                Inventory.amounts.put(ID, getAmount() - demands.get(week));
+                continue;
+            }
+            if (getAmount() == 0) {
+                deliver(week, demands.get(week));
+                continue;
+            }
+            deliver(week, demands.get(week) - getAmount());
+            Inventory.amounts.put(ID, 0);
         }
         printMRPAndMoveOn();
     }
 
-    public void deliver(int week, int amount) { // to deliver items
+    private void deliver(int week, int amount) { // to deliver items
         if (week - leadTime < 0) {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
+        if (lotSizing == 0) deliveries.put(week - leadTime, amount * multiplier); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
+        else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount * multiplier : ((amount * multiplier / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
+        if (Inventory.items.getRoot() != this) return; // if the current node is not the root of the tree processes below are unnecessary
         while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
         while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        if (lotSizing == 0) deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
-        else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount : ((amount / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
+    }
+
+    private int getAmount() {
+        return Inventory.amounts.get(this.ID);
     }
 
     public void printMRPAndMoveOn() {
