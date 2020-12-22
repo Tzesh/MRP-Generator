@@ -71,6 +71,16 @@ public class Node<T> {
         }
     }
 
+    public void initializeVariables() {
+        Item item = (Item)this;
+        item.initializeVariables();
+    }
+
+    public void produce() {
+        Item item = (Item)this;
+        item.produce();
+    }
+
 
     @Override
     public boolean equals(Object o) {

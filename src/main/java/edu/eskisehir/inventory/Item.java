@@ -29,8 +29,9 @@ public class Item extends Node<Item> {
 
     public void produce() { // we'll produce the item according to given demand information
         for (int week = 1; week <= 10; week++) {
+            Inventory.onHandFromPriorPeriod.put(week, getAmount());
             if (Inventory.scheduledReceipts.get(week) != null) {
-                Inventory.amounts.put(ID, getAmount());
+                Inventory.amounts.put(ID, getAmount() + Inventory.scheduledReceipts.get(week));
                 Inventory.scheduledReceipts.remove(week);
             }
             if (demands.get(week) == null) continue;
@@ -45,7 +46,7 @@ public class Item extends Node<Item> {
             deliver(week, demands.get(week) - getAmount());
             Inventory.amounts.put(ID, 0);
         }
-        printMRPAndMoveOn();
+        initializeVariables();
     }
 
     private void deliver(int week, int amount) { // to deliver items
@@ -53,20 +54,36 @@ public class Item extends Node<Item> {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
-        if (lotSizing == 0) deliveries.put(week - leadTime, amount * multiplier); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
-        else deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount * multiplier : ((amount * multiplier / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
-        if (!Inventory.items.getRoot().equals(this)) return; // if the current node is not the root of the tree processes below are unnecessary
-        while (this.nextSibling != null) this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        while (this.getFirstChild() != null) this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        if (lotSizing == 0)
+            deliveries.put(week - leadTime, amount * multiplier); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
+        else
+            deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount * multiplier : ((amount * multiplier / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
+        if (!Inventory.items.getRoot().equals(this))
+            return; // if the current node is not the root of the tree processes below are unnecessary
+        while (this.nextSibling != null)
+            this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        while (this.getFirstChild() != null)
+            this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
     }
 
     private int getAmount() {
         return Inventory.amounts.get(this.ID) == null ? 0 : Inventory.amounts.get(this.ID);
     }
 
-    public void printMRPAndMoveOn() {
+    public void initializeVariables() {
         // prints out the MRP table according to given data
         // produces another item in the tree
-        System.out.println("Deneme");
+
+        if (!Inventory.items.getRoot().equals(this))
+            return; // if the current node is not the root of the tree processes below are unnecessary
+        while (this.nextSibling != null) {
+            this.nextSibling.produce();
+            this.nextSibling.initializeVariables();
+        }
+        while (this.getFirstChild() != null) {
+            this.getFirstChild().produce();
+            this.nextSibling.initializeVariables();
+        }
     }
+
 }

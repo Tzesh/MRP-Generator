@@ -19,7 +19,7 @@ public class InventoryManager {
             System.out.println("An unknown error has occurred.");
         }
     }
-    
+
     private void setDefaultItems() throws IOException {
         Path path = Paths.get("items.txt");
         if (!Files.exists(path)) {
@@ -57,12 +57,12 @@ public class InventoryManager {
     }
 
     public void setDemands(Map<Integer, Integer> demands) {
-        Item root = (Item)Inventory.items.getRoot();
+        Item root = (Item) Inventory.items.getRoot();
         for (Integer week : demands.keySet()) root.addDemand(week, demands.get(week));
     }
 
     public void produce() {
-        Item root = (Item)Inventory.items.getRoot();
+        Item root = (Item) Inventory.items.getRoot();
         root.produce();
     }
 }
