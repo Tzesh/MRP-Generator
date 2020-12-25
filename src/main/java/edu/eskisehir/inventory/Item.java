@@ -28,12 +28,14 @@ public class Item extends Node<Item> {
     }
 
     public void produce() { // we'll produce the item according to given demand information
+        Map<Integer, Integer> scheduledReceipt = Inventory.scheduledReceipts.get(ID) == null ? new HashMap<>() : Inventory.scheduledReceipts.get(ID);
+        Map<Integer, Integer> onHandFromPriorPeriod = Inventory.onHandFromPriorPeriod.get(ID) == null ? new HashMap<>() : Inventory.onHandFromPriorPeriod.get(ID);
         for (int week = 1; week <= 10; week++) {
-            Inventory.onHandFromPriorPeriod.put(week, getAmount());
-            if (Inventory.scheduledReceipts.get(week) != null) {
-                Inventory.amounts.put(ID, getAmount() + Inventory.scheduledReceipts.get(week));
-                Inventory.scheduledReceipts.remove(week);
+            if (scheduledReceipt.containsKey(week)) {
+                Inventory.amounts.put(ID, getAmount() + scheduledReceipt.get(ID));
             }
+            if (onHandFromPriorPeriod.containsKey(week) && onHandFromPriorPeriod.get(week) != 0) onHandFromPriorPeriod.put(week, getAmount() + onHandFromPriorPeriod.get(week));
+            else onHandFromPriorPeriod.put(week, getAmount());
             if (demands.get(week) == null) continue;
             if (getAmount() > demands.get(week)) {
                 Inventory.amounts.put(ID, getAmount() - demands.get(week));
@@ -46,6 +48,7 @@ public class Item extends Node<Item> {
             deliver(week, demands.get(week) - getAmount());
             Inventory.amounts.put(ID, 0);
         }
+        Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
         initializeVariables();
     }
 
@@ -54,15 +57,14 @@ public class Item extends Node<Item> {
             System.out.println("This amount of item cannot be produced in the schedule");
             System.exit(0);
         }
+        amount *= multiplier;
         if (lotSizing == 0)
-            deliveries.put(week - leadTime, amount * multiplier); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
+            deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
         else
-            deliveries.put(week - leadTime, amount % lotSizing == 0 ? amount * multiplier : ((amount * multiplier / lotSizing) * lotSizing) + 1); // checks whether the given amount is suitable or not for lotSizing
-        if (!Inventory.items.getRoot().equals(this))
-            return; // if the current node is not the root of the tree processes below are unnecessary
-        while (this.nextSibling != null)
+            deliveries.put(week - leadTime, (amount / (float)lotSizing) * lotSizing == (amount / (float)lotSizing) * lotSizing ? amount / lotSizing * lotSizing : (amount / lotSizing * lotSizing) + lotSizing); // checks whether the given amount is suitable or not for lotSizing
+        if (this.nextSibling != null)
             this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        while (this.getFirstChild() != null)
+        if (this.getFirstChild() != null)
             this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
     }
 
@@ -74,16 +76,26 @@ public class Item extends Node<Item> {
         // prints out the MRP table according to given data
         // produces another item in the tree
 
-        if (!Inventory.items.getRoot().equals(this))
-            return; // if the current node is not the root of the tree processes below are unnecessary
-        while (this.nextSibling != null) {
+        if (this.nextSibling != null) {
             this.nextSibling.produce();
             this.nextSibling.initializeVariables();
         }
-        while (this.getFirstChild() != null) {
+        if (this.getFirstChild() != null) {
             this.getFirstChild().produce();
-            this.nextSibling.initializeVariables();
+            this.getFirstChild().initializeVariables();
         }
     }
 
+    public Map<Integer, Integer> getDemands() {
+        return demands;
+    }
+
+    public Map<Integer, Integer> getDeliveries() {
+        return deliveries;
+    }
+
+    @Override
+    public String toString() {
+        return "Item" + ID + "(" + name + ")";
+    }
 }

@@ -1,15 +1,19 @@
 package edu.eskisehir.inventory;
 
+import edu.eskisehir.utils.FileManager;
 import edu.eskisehir.utils.Tree;
+import java.io.File;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InventoryManager {
+    FileManager fileManager = new FileManager();
 
     public InventoryManager(boolean isDefault) {
         if (!isDefault) return;
@@ -21,13 +25,8 @@ public class InventoryManager {
     }
 
     private void setDefaultItems() throws IOException {
-        Path path = Paths.get("items.txt");
-        if (!Files.exists(path)) {
-            System.out.println("'items.txt' could not be found in the directory of the program.\n" +
-                    "Please make sure you have 'items.txt' in the same folder of the program.");
-            System.exit(0);
-        }
-        List<String> lines = Files.readAllLines(path);
+        File items = new File("items.txt");
+        List<String> lines = Files.readAllLines(Paths.get(items.getAbsolutePath()));
         lines.forEach(line -> {
             if (!line.contains("//") && line.length() != 0) {
                 String[] information = line.split(",  ");
@@ -44,16 +43,17 @@ public class InventoryManager {
                 if (rootID == 0) {
                     Item root = new Item(itemID, name, leadTime, lotSizing, multiplier);
                     Inventory.amounts.put(itemID, amount);
-                    Inventory.scheduledReceipts.put(arrivalOnWeek, scheduledReceipt);
+                    if (arrivalOnWeek != 0 && scheduledReceipt != 0)
+                    Inventory.scheduledReceipts.put(itemID, new HashMap<>(arrivalOnWeek, scheduledReceipt));
                     Inventory.items = new Tree<>(root);
                 } else {
                     Inventory.items.find(rootID).addChild(new Item(itemID, name, leadTime, lotSizing, multiplier));
                     Inventory.amounts.put(itemID, amount);
-                    Inventory.scheduledReceipts.put(arrivalOnWeek, scheduledReceipt);
+                    if (arrivalOnWeek != 0 && scheduledReceipt != 0)
+                    Inventory.scheduledReceipts.put(itemID, new HashMap<>(arrivalOnWeek, scheduledReceipt));
                 }
             }
         });
-
     }
 
     public void setDemands(Map<Integer, Integer> demands) {

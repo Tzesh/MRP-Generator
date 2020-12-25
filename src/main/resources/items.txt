@@ -1,0 +1,26 @@
+// MRP-Generator - Information file of all items
+// You can change the items information with given cryptology below,
+//root-item-ID,  Item-ID,  Name of item,  Amount-on-Hand,  Scheduled-Receipt,  Arrival-on-week,  Lead-Time,  Lot-Sizing-Rule,  Multiplier
+
+// root of the tree
+0,  1605,  Shovel complete,  30,  0,  0,  1,  0,  1
+
+// depth = 1
+1605,  13122,  Top handle,  0,  70,  3,  1,  40,  1
+1605,  048,  Scoop-shaft,  30,  0,  0,  3,  30,  1
+1605,  118,  Shaft,  0,  50,  2,  2,  0,  1
+1605,  062,  Nail,  50,  100,  6,  2,  0,  4
+1605,  14127,  Rivet,  60,  0,  0,  1,  100,  4
+1605,  314,  (Scoop assembly),  0,  50,  5,  1,  50,  1
+
+// depth = 2
+13122,  457,  Top handle,  0,  20,  2,  2,  0,  1
+13122,  062,  Nail,  50,  100,  6,  2,  0,  2
+13122,  11495,  Bracelet,  120,  0,  0,  1,  50,  1
+314,  2142,  Scoop,  80,  0,  0,  2,  100,  1
+314,  019,  Blade,  50,  40,  5,  2,  50,  1
+314,  14127,  Rivet,  60,  0,  0,  1,  100,  6
+
+// depth = 3
+11495,  129,  Top handle,  0,  100,  8,  4,  40,  1
+11495,  1118,  Top handle,  30,  0,  0,  3,  0,  1

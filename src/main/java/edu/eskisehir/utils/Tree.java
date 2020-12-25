@@ -2,6 +2,7 @@ package edu.eskisehir.utils;
 
 public class Tree<T> {
     private Node<T> root;
+    private Node<T> findedNode;
 
     public Tree(Node<T> root) {
         this.root = root;
@@ -15,24 +16,31 @@ public class Tree<T> {
         return this.root == null;
     }
 
+    public void findNode(int id) {
+        if (root.getID() == id) {
+            findedNode = root;
+        } else {
+            findNode(root, id);
+        }
+    }
+
+    public void findNode(Node<T> node, int id) {
+        if (node.getID() == id) {
+            findedNode = node;
+            return;
+        }
+
+        Node<T> child = node.firstChild;
+        while (child != null) {
+            findNode(child, id);
+            child = child.nextSibling;
+        }
+    }
+
     public Node<T> find(int id) {
-        if (root.getID() == id) return root;
-        else return find(root, id);
+        findNode(id);
+        return findedNode;
     }
 
-    public Node<T> find(Node<T> node, int id) {
-        Node<T> sibling = node.firstChild;
-        while (sibling != null) {
-            if (sibling.getID() == id) return sibling;
-            sibling = sibling.nextSibling;
-        }
-
-        sibling = node.firstChild;
-        while (sibling != null) {
-            if (sibling.hasChild()) return find(sibling, id);
-            sibling = sibling.nextSibling;
-        }
-        return null;
-    }
 }
 

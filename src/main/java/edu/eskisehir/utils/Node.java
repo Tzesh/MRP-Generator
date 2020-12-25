@@ -97,5 +97,7 @@ public class Node<T> {
     public int hashCode() {
         return Objects.hash(firstChild, nextSibling, name, ID);
     }
+
+
 }
 
