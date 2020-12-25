@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Node<T> {
 
     public Node<T> nextSibling;
-    Node<T> firstChild;
+    public Node<T> firstChild;
     String name;
     int ID;
 
@@ -16,10 +16,6 @@ public class Node<T> {
         this.nextSibling = null;
         this.name = name;
         this.ID = ID;
-    }
-
-    public Node<T> getFirstChild() {
-        return firstChild;
     }
 
     public boolean hasChild() {
@@ -65,19 +61,17 @@ public class Node<T> {
     }
 
     public void addDemand(int week, int amount) {
-        if (this instanceof Item) {
-            Item item = (Item)this;
-            item.addDemand(week, amount);
-        }
+        Item item = (Item) this;
+        item.addDemand(week, amount);
     }
 
     public void initializeVariables() {
-        Item item = (Item)this;
+        Item item = (Item) this;
         item.initializeVariables();
     }
 
     public void produce() {
-        Item item = (Item)this;
+        Item item = (Item) this;
         item.produce();
     }
 

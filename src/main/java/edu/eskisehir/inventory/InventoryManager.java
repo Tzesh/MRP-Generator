@@ -43,26 +43,34 @@ public class InventoryManager {
                 if (rootID == 0) {
                     Item root = new Item(itemID, name, leadTime, lotSizing, multiplier);
                     Inventory.amounts.put(itemID, amount);
-                    if (arrivalOnWeek != 0 && scheduledReceipt != 0)
-                    Inventory.scheduledReceipts.put(itemID, new HashMap<>(arrivalOnWeek, scheduledReceipt));
-                    Inventory.items = new Tree<>(root);
+                    if (arrivalOnWeek != 0 && scheduledReceipt != 0) {
+                        Map<Integer, Integer> receipts = new HashMap<Integer, Integer>() {{
+                           put(arrivalOnWeek, scheduledReceipt);
+                        }};
+                        Inventory.scheduledReceipts.put(itemID, receipts);
+                    }
+                    Inventory.items = new Tree(root);
                 } else {
                     Inventory.items.find(rootID).addChild(new Item(itemID, name, leadTime, lotSizing, multiplier));
                     Inventory.amounts.put(itemID, amount);
-                    if (arrivalOnWeek != 0 && scheduledReceipt != 0)
-                    Inventory.scheduledReceipts.put(itemID, new HashMap<>(arrivalOnWeek, scheduledReceipt));
+                    if (arrivalOnWeek != 0 && scheduledReceipt != 0) {
+                        Map<Integer, Integer> receipts = new HashMap<Integer, Integer>() {{
+                            put(arrivalOnWeek, scheduledReceipt);
+                        }};
+                        Inventory.scheduledReceipts.put(itemID, new HashMap<>(receipts));
+                    }
                 }
             }
         });
     }
 
     public void setDemands(Map<Integer, Integer> demands) {
-        Item root = (Item) Inventory.items.getRoot();
+        Item root = (Item)Inventory.items.getRoot();
         for (Integer week : demands.keySet()) root.addDemand(week, demands.get(week));
     }
 
     public void produce() {
-        Item root = (Item) Inventory.items.getRoot();
+        Item root = (Item)Inventory.items.getRoot();
         root.produce();
     }
 }

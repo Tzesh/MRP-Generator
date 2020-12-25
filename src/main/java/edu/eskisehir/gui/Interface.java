@@ -9,7 +9,6 @@ import edu.eskisehir.inventory.Inventory;
 import edu.eskisehir.inventory.InventoryManager;
 import edu.eskisehir.inventory.Item;
 import edu.eskisehir.utils.FileManager;
-import edu.eskisehir.utils.Node;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -18,6 +17,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -215,15 +215,18 @@ public class Interface extends javax.swing.JFrame {
 
     private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateButtonActionPerformed
         // TODO add your handling code here:
-        Inventory.items.getRoot().produce();
+        Item root = (Item)Inventory.items.getRoot();
+        root.produce();
         itemChooser.setEnabled(true);
+        calculateButton.setEnabled(false);
     }//GEN-LAST:event_calculateButtonActionPerformed
 
     private void itemChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemChooserActionPerformed
+        if (!itemChooser.isEnabled()) return;
         if (itemChooser.getSelectedItem() != null) {
             int itemID = items.get(itemChooser.getSelectedItem());
             Item item = (Item) Inventory.items.find(itemID);
-            setMRP(item);
+            setMRP(item.getID());
         }
     }//GEN-LAST:event_itemChooserActionPerformed
 
@@ -258,25 +261,38 @@ public class Interface extends javax.swing.JFrame {
 
     private void setItems() {
         for (Integer ID : Inventory.amounts.keySet()) {
-            Node<Item> item = Inventory.items.find(ID);
+            Item item = (Item)Inventory.items.find(ID);
             items.put(item.toString(), ID);
             itemChooser.addItem(item.toString());
         }
     }
 
-    private void setMRP(Item item) {
-        int[] grossRequirements = getMRPValue(item.getDemands());
+    private void clear(DefaultTableModel dm) {
+        for (int i = 0; i < dm.getRowCount(); i++) {
+            for (int j = 0; j < dm.getColumnCount(); j++) {
+                if (j == 1) continue;
+                dm.setValueAt("", i, j);
+            }
+        }
+    }
+
+    private void setMRP(int ID) {
+        clear((DefaultTableModel) itemTable.getModel());
+        int[] grossRequirements = getMRPValue(Inventory.grossRequirements.get(ID));
         setValues(grossRequirements, 0);
-        if (Inventory.scheduledReceipts.get(item.getID()) != null) {
-            int[] scheduledReceipts = getMRPValue(Inventory.scheduledReceipts.get(item.getID()));
+        if (Inventory.scheduledReceipts.get(ID) != null) {
+            int[] scheduledReceipts = getMRPValue(Inventory.scheduledReceipts.get(ID));
             setValues(scheduledReceipts, 1);
         }
-        if (Inventory.onHandFromPriorPeriod.get(item.getID()) != null) {
-            int[] onHandFromPriorPeriod = getMRPValue(Inventory.onHandFromPriorPeriod.get(item.getID()));
+        if (Inventory.onHandFromPriorPeriod.get(ID) != null) {
+            int[] onHandFromPriorPeriod = getMRPValue(Inventory.onHandFromPriorPeriod.get(ID));
             setValues(onHandFromPriorPeriod, 2);
         }
-        int[] plannedOrderDeliveries = getMRPValue(item.getDeliveries());
-        setValues(plannedOrderDeliveries, 5);
+        int[] netRequirements = getMRPValue(Inventory.netRequirements.get(ID));
+        setValues(netRequirements, 3);
+
+        //int[] plannedOrderDeliveries = getMRPValue(Inventory.);
+        //setValues(plannedOrderDeliveries, 5);
     }
 
     private void setValues(int[] values, int row) {

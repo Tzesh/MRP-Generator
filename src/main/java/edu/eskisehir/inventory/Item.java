@@ -8,6 +8,9 @@ import java.util.Map;
 public class Item extends Node<Item> {
     Map<Integer, Integer> demands = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
     Map<Integer, Integer> deliveries = new HashMap<>(); // deliveries needed to complete the item
+    Map<Integer, Integer> requirements = new HashMap<>();
+    Map<Integer, Integer> onHandFromPriorPeriod = new HashMap<>();
+    Map<Integer, Integer> scheduledReceipts = new HashMap<>();
     int ID; // item ID of the item
     String name; // name of the item
     int multiplier; // how many products need to be produced when our root item will be produced
@@ -28,44 +31,53 @@ public class Item extends Node<Item> {
     }
 
     public void produce() { // we'll produce the item according to given demand information
-        Map<Integer, Integer> scheduledReceipt = Inventory.scheduledReceipts.get(ID) == null ? new HashMap<>() : Inventory.scheduledReceipts.get(ID);
-        Map<Integer, Integer> onHandFromPriorPeriod = Inventory.onHandFromPriorPeriod.get(ID) == null ? new HashMap<>() : Inventory.onHandFromPriorPeriod.get(ID);
+        scheduledReceipts = Inventory.scheduledReceipts.get(ID);
+        Inventory.scheduledReceipts.remove(ID);
         for (int week = 1; week <= 10; week++) {
-            if (scheduledReceipt.containsKey(week)) {
-                Inventory.amounts.put(ID, getAmount() + scheduledReceipt.get(ID));
+            int demand = demands.getOrDefault(week, 0);
+            int amount = getAmount();
+            onHandFromPriorPeriod.put(week, amount);
+            if (scheduledReceipts != null && scheduledReceipts.containsKey(week)) {
+                amount += scheduledReceipts.get(week);
             }
-            if (onHandFromPriorPeriod.containsKey(week) && onHandFromPriorPeriod.get(week) != 0) onHandFromPriorPeriod.put(week, getAmount() + onHandFromPriorPeriod.get(week));
-            else onHandFromPriorPeriod.put(week, getAmount());
-            if (demands.get(week) == null) continue;
-            if (getAmount() > demands.get(week)) {
-                Inventory.amounts.put(ID, getAmount() - demands.get(week));
-                continue;
+
+            if (amount >= demand) {
+                demand = 0;
+                Inventory.amounts.put(ID, amount - demand);
             }
-            if (getAmount() == 0) {
-                deliver(week, demands.get(week));
-                continue;
+            else {
+                demand -= amount;
+                Inventory.amounts.put(ID, 0);
+                deliver(week, demand);
             }
-            deliver(week, demands.get(week) - getAmount());
-            Inventory.amounts.put(ID, 0);
+            requirements.put(week, demand);
         }
-        Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
         initializeVariables();
     }
 
     private void deliver(int week, int amount) { // to deliver items
         if (week - leadTime < 0) {
             System.out.println("This amount of item cannot be produced in the schedule");
-            System.exit(0);
+            return;
         }
+        int firstAmount = amount;
         amount *= multiplier;
-        if (lotSizing == 0)
+        requirements.put(week, amount);
+        if (lotSizing == 0) {
             deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
-        else
-            deliveries.put(week - leadTime, (amount / (float)lotSizing) * lotSizing == (amount / (float)lotSizing) * lotSizing ? amount / lotSizing * lotSizing : (amount / lotSizing * lotSizing) + lotSizing); // checks whether the given amount is suitable or not for lotSizing
-        if (this.nextSibling != null)
-            this.nextSibling.addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
-        if (this.getFirstChild() != null)
-            this.getFirstChild().addDemand(week, amount); // to add necessary demands that will be used in printMRPAndMoveOn method
+        }
+        else {
+            if (amount > lotSizing) {
+                amount = (double)amount / lotSizing % 1 == 0 ? amount : (amount / lotSizing * lotSizing) + lotSizing;
+                Inventory.amounts.put(ID, amount - firstAmount);
+            }
+            else amount = lotSizing;
+            deliveries.put(week - leadTime, amount);
+            Inventory.amounts.put(ID, amount - firstAmount);
+        }
+        if (this.firstChild != null) this.firstChild.addDemand(week, amount);
+        if (this.nextSibling != null) this.nextSibling.addDemand(week, firstAmount);
+
     }
 
     private int getAmount() {
@@ -75,15 +87,33 @@ public class Item extends Node<Item> {
     public void initializeVariables() {
         // prints out the MRP table according to given data
         // produces another item in the tree
+        if (Inventory.grossRequirements.containsKey(ID)) Inventory.grossRequirements.put(ID, updateVariables(Inventory.grossRequirements.get(ID), demands));
+        else Inventory.grossRequirements.put(ID, demands);
+        if (Inventory.netRequirements.containsKey(ID)) Inventory.netRequirements.put(ID, updateVariables(Inventory.netRequirements.get(ID), requirements));
+        else Inventory.netRequirements.put(ID, requirements);
+        if (Inventory.onHandFromPriorPeriod.containsKey(ID)) Inventory.onHandFromPriorPeriod.put(ID, updateVariables(Inventory.onHandFromPriorPeriod.get(ID), onHandFromPriorPeriod));
+        else Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
+        if (Inventory.plannedOrderDeliveries.containsKey(ID)) Inventory.plannedOrderDeliveries.put(ID, updateVariables(Inventory.plannedOrderDeliveries.get(ID), deliveries));
+        else Inventory.plannedOrderDeliveries.put(ID, deliveries);
 
+        if (this.firstChild != null) {
+            this.firstChild.produce();
+            this.firstChild.initializeVariables();
+        }
         if (this.nextSibling != null) {
             this.nextSibling.produce();
             this.nextSibling.initializeVariables();
         }
-        if (this.getFirstChild() != null) {
-            this.getFirstChild().produce();
-            this.getFirstChild().initializeVariables();
+        Inventory.scheduledReceipts.put(ID, scheduledReceipts);
+    }
+
+    private Map<Integer, Integer> updateVariables(Map<Integer, Integer> existing, Map<Integer, Integer> replacement) {
+        for (Integer temp : existing.keySet()) {
+            int tempValue = existing.get(temp) != null ? existing.get(temp) : 0;
+            int tempValue2 = replacement.get(temp) != null ? replacement.get(temp) : 0;
+            existing.put(temp, tempValue + tempValue2);
         }
+        return existing;
     }
 
     public Map<Integer, Integer> getDemands() {
