@@ -1,19 +1,16 @@
 package edu.eskisehir.inventory;
 
-import edu.eskisehir.utils.FileManager;
 import edu.eskisehir.utils.Tree;
 import java.io.File;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InventoryManager {
-    FileManager fileManager = new FileManager();
 
     public InventoryManager(boolean isDefault) {
         if (!isDefault) return;

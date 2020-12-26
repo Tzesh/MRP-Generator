@@ -139,6 +139,10 @@ public class Item extends Node<Item> {
         return existing;
     }
 
+    public int getLeadTime() {
+        return leadTime;
+    }
+
     @Override
     public String toString() {
         return "Item" + ID + "(" + name + ")";

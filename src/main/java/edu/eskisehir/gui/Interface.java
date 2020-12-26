@@ -8,7 +8,6 @@ package edu.eskisehir.gui;
 import edu.eskisehir.inventory.Inventory;
 import edu.eskisehir.inventory.InventoryManager;
 import edu.eskisehir.inventory.Item;
-import edu.eskisehir.utils.FileManager;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -20,12 +19,10 @@ import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
  * @author Tzesh
  */
 public class Interface extends javax.swing.JFrame {
     Map<String, Integer> items = new HashMap<>();
-    FileManager fileManager = new FileManager();
     InventoryManager inventoryManager = new InventoryManager(true);
 
 
@@ -38,6 +35,7 @@ public class Interface extends javax.swing.JFrame {
         calculateButton.setEnabled(false);
         itemTable.setEnabled(false);
         itemChooser.removeAllItems();
+        itemChooser.addItem("Select an item");
         itemChooser.setEnabled(false);
     }
 
@@ -75,25 +73,25 @@ public class Interface extends javax.swing.JFrame {
         setResizable(false);
 
         itemTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"", "Gross Requirements", null, null, null, null, null, null, null, null, null, null},
-                {null, "Scheduled Receipts", null, null, null, null, null, null, null, null, null, null},
-                {"", "On hand from prior period", null, null, null, null, null, null, null, null, null, null},
-                {null, "Net requirements", null, null, null, null, null, null, null, null, null, null},
-                {null, "Time phased net requirements", null, null, null, null, null, null, null, null, null, null},
-                {null, "Planned order releases", null, null, null, null, null, null, null, null, null, null},
-                {null, "Planned order delivery", null, null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "", "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
-            }
+                new Object[][]{
+                        {"", "Gross Requirements", null, null, null, null, null, null, null, null, null, null},
+                        {null, "Scheduled Receipts", null, null, null, null, null, null, null, null, null, null},
+                        {"", "On hand from prior period", null, null, null, null, null, null, null, null, null, null},
+                        {null, "Net requirements", null, null, null, null, null, null, null, null, null, null},
+                        {null, "Time phased net requirements", null, null, null, null, null, null, null, null, null, null},
+                        {null, "Planned order releases", null, null, null, null, null, null, null, null, null, null},
+                        {null, "Planned order delivery", null, null, null, null, null, null, null, null, null, null}
+                },
+                new String[]{
+                        "", "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
+                }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            Class[] types = new Class[]{
+                    java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
         jScrollPane2.setViewportView(itemTable);
@@ -124,7 +122,7 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        itemChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        itemChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         itemChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 itemChooserActionPerformed(evt);
@@ -146,19 +144,19 @@ public class Interface extends javax.swing.JFrame {
         });
 
         demandTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Demand", null, null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
-            }
+                new Object[][]{
+                        {"Demand", null, null, null, null, null, null, null, null, null, null}
+                },
+                new String[]{
+                        "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
+                }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            Class[] types = new Class[]{
+                    java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
         jScrollPane1.setViewportView(demandTable);
@@ -169,63 +167,67 @@ public class Interface extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane3)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(itemChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(editButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(setButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(calculateButton))
-                            .addComponent(jLabel1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE)
+                                        .addComponent(jScrollPane2)
+                                        .addComponent(jScrollPane3)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(itemChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(editButton)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(setButton)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(calculateButton))
+                                                        .addComponent(jLabel1))
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editButton)
-                    .addComponent(setButton)
-                    .addComponent(calculateButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(itemChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(18, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(editButton)
+                                        .addComponent(setButton)
+                                        .addComponent(calculateButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(itemChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateButtonActionPerformed
+    private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         inventoryManager.produce();
+        setItems();
         itemChooser.setEnabled(true);
         calculateButton.setEnabled(false);
-    }//GEN-LAST:event_calculateButtonActionPerformed
+    }
 
-    private void itemChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemChooserActionPerformed
-        if (!itemChooser.isEnabled()) return;
+    private void itemChooserActionPerformed(java.awt.event.ActionEvent evt) {
+        if (itemChooser.getSelectedIndex() == 0 || !itemChooser.isEnabled()) {
+            clear((DefaultTableModel) itemTable.getModel());
+            return;
+        }
         if (itemChooser.getSelectedItem() != null) {
             int itemID = items.get(itemChooser.getSelectedItem());
             Item item = (Item) Inventory.items.find(itemID);
-            setMRP(item.getID());
+            setMRP(item.getID(), item.getLeadTime());
         }
     }//GEN-LAST:event_itemChooserActionPerformed
 
@@ -255,12 +257,11 @@ public class Interface extends javax.swing.JFrame {
         setButton.setEnabled(false);
         editButton.setEnabled(false);
         demandTable.setEnabled(false);
-        setItems();
     }//GEN-LAST:event_setButtonActionPerformed
 
     private void setItems() {
         for (Integer ID : Inventory.amounts.keySet()) {
-            Item item = (Item)Inventory.items.find(ID);
+            Item item = (Item) Inventory.items.find(ID);
             items.put(item.toString(), ID);
             itemChooser.addItem(item.toString());
         }
@@ -275,30 +276,57 @@ public class Interface extends javax.swing.JFrame {
         }
     }
 
-    private void setMRP(int ID) {
+    private void setMRP(int ID, int leadTime) {
         clear((DefaultTableModel) itemTable.getModel());
         int[] grossRequirements = getMRPValue(Inventory.grossRequirements.get(ID));
-        setValues(grossRequirements, 0);
+        setValues(grossRequirements, 0, leadTime);
         if (Inventory.scheduledReceipts.get(ID) != null) {
             int[] scheduledReceipts = getMRPValue(Inventory.scheduledReceipts.get(ID));
-            setValues(scheduledReceipts, 1);
+            setValues(scheduledReceipts, 1, leadTime);
         }
-        if (Inventory.onHandFromPriorPeriod.get(ID) != null) {
-            int[] onHandFromPriorPeriod = getMRPValue(Inventory.onHandFromPriorPeriod.get(ID));
-            setValues(onHandFromPriorPeriod, 2);
-        }
+        int[] onHandFromPriorPeriod = getMRPValue(Inventory.onHandFromPriorPeriod.get(ID));
+        setValues(onHandFromPriorPeriod, 2, leadTime);
         int[] netRequirements = getMRPValue(Inventory.netRequirements.get(ID));
-        setValues(netRequirements, 3);
-
-        //int[] plannedOrderDeliveries = getMRPValue(Inventory.);
-        //setValues(plannedOrderDeliveries, 5);
+        setValues(netRequirements, 3, leadTime);
+        int[] plannedOrderDeliveries = getMRPValue(Inventory.plannedOrderDeliveries.get(ID));
+        setValues(plannedOrderDeliveries, 5, leadTime);
     }
 
-    private void setValues(int[] values, int row) {
+    private void setValues(int[] values, int row, int leadTime) {
+        boolean isRecursive = false;
+        if (row == 3 || row == 5) isRecursive = true;
         for (int week = 1; week <= 10; week++) {
             if (values[week] != 0) itemTable.setValueAt(values[week], row, week + 1);
             else itemTable.setValueAt(null, row, week + 1);
         }
+        if (isRecursive) {
+            if (row == 3) {
+                setValues(shiftValues(values, leadTime), row + 1, leadTime);
+            }
+            else {
+                setValues(shiftValues(values, -leadTime), row + 1, leadTime);
+            }
+        }
+    }
+
+    private int[] shiftValues(int[] values, int dif) {
+        boolean left = dif > 0;
+        if (left) {
+            for (int week = 1; week < values.length - 1; week++) {
+                if (values[week] == 0) continue;
+                int temp = values[week - dif];
+                values[week - dif] = values[week];
+                values[week] = temp;
+            }
+        } else {
+            for (int week = values.length - 1; week >= 1; week--) {
+                if (values[week] == 0) continue;
+                int temp = values[week - dif];
+                values[week - dif] = values[week];
+                values[week] = temp;
+            }
+        }
+        return values;
     }
 
     private int[] getMRPValue(Map<Integer, Integer> map) {
@@ -326,7 +354,7 @@ public class Interface extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
 
         try {
@@ -354,7 +382,7 @@ public class Interface extends javax.swing.JFrame {
                 new Interface().setVisible(true);
             }
         });
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
