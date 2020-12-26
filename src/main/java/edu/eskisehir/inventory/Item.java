@@ -4,12 +4,11 @@ import edu.eskisehir.utils.Node;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Item extends Node<Item> {
-    Map<Integer, Integer> demands = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
-    Map<Integer, Integer> deliveries = new HashMap<>(); // deliveries needed to complete the item
-    Map<Integer, Integer> requirements = new HashMap<>();
+    Map<Integer, Integer> grossRequirements = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
+    Map<Integer, Integer> plannedOrderDeliveries = new HashMap<>(); // deliveries needed to complete the item
+    Map<Integer, Integer> netRequirements = new HashMap<>();
     Map<Integer, Integer> onHandFromPriorPeriod = new HashMap<>();
     Map<Integer, Integer> scheduledReceipts = new HashMap<>();
     int ID; // item ID of the item
@@ -28,8 +27,8 @@ public class Item extends Node<Item> {
     }
 
     public void addDemand(int week, int amount) {
-        int preAmount = demands.getOrDefault(week, 0);
-        demands.put(week, amount + preAmount);
+        int preAmount = grossRequirements.getOrDefault(week, 0);
+        grossRequirements.put(week, amount + preAmount);
     }
 
     public void produce() { // we'll produce the item according to given demand information
@@ -41,7 +40,7 @@ public class Item extends Node<Item> {
         }
         Inventory.scheduledReceipts.remove(ID);
         for (int week = 1; week <= 10; week++) {
-            int demand = demands.getOrDefault(week, 0);
+            int demand = grossRequirements.getOrDefault(week, 0);
             int amount = getAmount();
             onHandFromPriorPeriod.put(week, amount);
             if (scheduledReceipts != null && scheduledReceipts.containsKey(week)) {
@@ -50,21 +49,20 @@ public class Item extends Node<Item> {
             if (amount >= demand) {
                 setAmount(amount - demand);
                 demand = 0;
-            }
-            else {
+            } else {
                 demand -= amount;
                 setAmount(0);
                 deliver(week, demand);
             }
-            requirements.put(week, demand);
+            netRequirements.put(week, demand);
         }
         initializeVariables();
     }
 
     private void hasIdentical() {
         Item identical = Inventory.items.items.get(Inventory.items.items.indexOf(this));
-        demands.keySet().forEach(week -> {
-            identical.addDemand(week, demands.get(week));
+        grossRequirements.keySet().forEach(week -> {
+            identical.addDemand(week, grossRequirements.get(week));
         });
     }
 
@@ -74,26 +72,24 @@ public class Item extends Node<Item> {
             return;
         }
         int firstAmount = amount;
-        requirements.put(week, amount);
+        netRequirements.put(week, amount);
         if (lotSizing == 0) {
-            deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
-        }
-        else {
+            plannedOrderDeliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
+        } else {
             if (amount > lotSizing) {
-                amount = (double)amount / lotSizing % 1 == 0 ? amount : (amount / lotSizing * lotSizing) + lotSizing;
-                deliveries.put(week - leadTime, amount);
-            }
-            else {
+                amount = (double) amount / lotSizing % 1 == 0 ? amount : (amount / lotSizing * lotSizing) + lotSizing;
+                plannedOrderDeliveries.put(week - leadTime, amount);
+            } else {
                 amount = lotSizing;
-                deliveries.put(week - leadTime, amount);
+                plannedOrderDeliveries.put(week - leadTime, amount);
             }
             setAmount(amount - firstAmount);
         }
         if (this.firstChild != null) {
-            Item child = (Item)this.firstChild;
+            Item child = (Item) this.firstChild;
             child.addDemand(week - leadTime, amount * child.multiplier);
             while (child.nextSibling != null) {
-                child = (Item)child.nextSibling;
+                child = (Item) child.nextSibling;
                 child.addDemand(week - leadTime, amount * child.multiplier);
             }
         }
@@ -110,33 +106,21 @@ public class Item extends Node<Item> {
     }
 
     public void initializeVariables() {
-        // prints out the MRP table according to given data
-        // produces another item in the tree
-        Inventory.grossRequirements.put(ID, demands);
-        Inventory.netRequirements.put(ID, requirements);
+        Inventory.grossRequirements.put(ID, grossRequirements);
+        Inventory.netRequirements.put(ID, netRequirements);
         Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
-        Inventory.plannedOrderDeliveries.put(ID, deliveries);
+        Inventory.plannedOrderDeliveries.put(ID, plannedOrderDeliveries);
 
         if (this.firstChild != null) {
-            Item child = (Item)this.firstChild;
+            Item child = (Item) this.firstChild;
             child.produce();
             while (child.nextSibling != null) {
-                child = (Item)child.nextSibling;
+                child = (Item) child.nextSibling;
                 child.produce();
             }
         }
 
         Inventory.scheduledReceipts.put(ID, scheduledReceipts);
-    }
-
-    private Map<Integer, Integer> updateVariables(Map<Integer, Integer> existing, Map<Integer, Integer> replacement) {
-            for (Integer temp2 : replacement.keySet()) {
-                int tempValue2 = replacement.get(temp2) != null ? replacement.get(temp2) : 0;
-                int tempValue1 = replacement.get(temp2) != null ? replacement.get(temp2) : 0;
-                if (existing.containsKey(temp2)) existing.put(temp2, tempValue1 + tempValue2);
-                else existing.put(temp2, tempValue2);
-            }
-        return existing;
     }
 
     public int getLeadTime() {

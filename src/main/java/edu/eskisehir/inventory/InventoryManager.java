@@ -1,8 +1,8 @@
 package edu.eskisehir.inventory;
 
 import edu.eskisehir.utils.Tree;
-import java.io.File;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,7 +42,7 @@ public class InventoryManager {
                     Inventory.amounts.put(itemID, amount);
                     if (arrivalOnWeek != 0 && scheduledReceipt != 0) {
                         Map<Integer, Integer> receipts = new HashMap<Integer, Integer>() {{
-                           put(arrivalOnWeek, scheduledReceipt);
+                            put(arrivalOnWeek, scheduledReceipt);
                         }};
                         Inventory.scheduledReceipts.put(itemID, receipts);
                     }
@@ -67,7 +67,7 @@ public class InventoryManager {
 
     public void produce() {
         Inventory.items.getPreOrder();
-        Item root = (Item)Inventory.items.getRoot();
+        Item root = (Item) Inventory.items.getRoot();
         root.produce();
     }
 }

@@ -1,34 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.eskisehir.gui;
 
 import edu.eskisehir.inventory.Inventory;
 import edu.eskisehir.inventory.InventoryManager;
 import edu.eskisehir.inventory.Item;
 
-import java.awt.Desktop;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JTextArea;
-import javax.swing.table.DefaultTableModel;
 
-/**
- * @author Tzesh
- */
 public class Interface extends javax.swing.JFrame {
     Map<String, Integer> items = new HashMap<>();
     InventoryManager inventoryManager = new InventoryManager(true);
 
-
-    /**
-     * Creates new form Interface
-     */
     public Interface() {
         initComponents();
         setConsole(console); // setting JTextArea console as default output type of the program
@@ -86,7 +74,7 @@ public class Interface extends javax.swing.JFrame {
                         "", "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
                 }
         ) {
-            Class[] types = new Class[]{
+            final Class[] types = new Class[]{
                     java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
@@ -151,7 +139,7 @@ public class Interface extends javax.swing.JFrame {
                         "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
                 }
         ) {
-            Class[] types = new Class[]{
+            final Class[] types = new Class[]{
                     java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
@@ -302,8 +290,7 @@ public class Interface extends javax.swing.JFrame {
         if (isRecursive) {
             if (row == 3) {
                 setValues(shiftValues(values, leadTime), row + 1, leadTime);
-            }
-            else {
+            } else {
                 setValues(shiftValues(values, -leadTime), row + 1, leadTime);
             }
         }
@@ -347,36 +334,7 @@ public class Interface extends javax.swing.JFrame {
         return count != 0 ? result : null;
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        //</editor-fold>
-
-        /* Create and display the form */
+    public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Interface().setVisible(true);
@@ -385,7 +343,6 @@ public class Interface extends javax.swing.JFrame {
 
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton calculateButton;
     private javax.swing.JTextArea console;
     private javax.swing.JTable demandTable;
@@ -397,5 +354,4 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton setButton;
-    // End of variables declaration//GEN-END:variables
 }
