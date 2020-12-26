@@ -2,8 +2,8 @@ package edu.eskisehir.inventory;
 
 import edu.eskisehir.utils.Tree;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -11,18 +11,33 @@ import java.util.List;
 import java.util.Map;
 
 public class InventoryManager {
+    public String itemsPath = null;
 
-    public InventoryManager(boolean isDefault) {
-        if (!isDefault) return;
+    public InventoryManager(boolean setItems) {
+        if (!setItems) return;
         try {
-            setDefaultItems();
+            setItems();
         } catch (IOException e) {
             System.out.println("An unknown error has occurred.");
         }
     }
 
-    private void setDefaultItems() throws IOException {
+    private void setItems() throws IOException {
         File items = new File("items.txt");
+        if (!items.exists()) {
+            InputStream input = getClass().getResourceAsStream("/constants/items.txt");
+            items = File.createTempFile("items", ".txt");
+            OutputStream out = new FileOutputStream(items);
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = input.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.close();
+            System.out.println("Created a temporary items.txt due to not found in the same directory of the program.");
+        }
+        itemsPath = items.getAbsolutePath();
         List<String> lines = Files.readAllLines(Paths.get(items.getAbsolutePath()));
         lines.forEach(line -> {
             if (!line.contains("//") && line.length() != 0) {
@@ -60,6 +75,32 @@ public class InventoryManager {
             }
         });
         Inventory.items.getPreOrder();
+    }
+
+    private File createFile(String fileName) throws IOException {
+        File file = null;
+        String resource = fileName;
+        URL res = getClass().getResource(resource);
+        if (res.getProtocol().equals("jar")) {
+            InputStream input = getClass().getResourceAsStream(resource);
+            file = File.createTempFile("tempfile", ".tmp");
+            OutputStream out = new FileOutputStream(file);
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = input.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.close();
+            file.deleteOnExit();
+        } else {
+            file = new File(res.getFile());
+        }
+
+        if (file != null && !file.exists()) {
+            throw new RuntimeException("Error: File " + file + " not found!");
+        }
+        return file;
     }
 
     public void setDemands(Map<Integer, Integer> demands) {

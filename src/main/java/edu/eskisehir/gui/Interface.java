@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class Interface extends javax.swing.JFrame {
     Map<String, Integer> items = new HashMap<>();
-    InventoryManager inventoryManager = new InventoryManager(true);
+    InventoryManager inventoryManager = null;
 
 
     /**
@@ -40,6 +40,7 @@ public class Interface extends javax.swing.JFrame {
         itemChooser.setEnabled(false);
         centerTable(itemTable);
         centerTable(demandTable);
+        inventoryManager = new InventoryManager(true);
     }
 
     private void setConsole(JTextArea console) { // all of the outputs will appear into JTextArea
@@ -261,7 +262,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            Desktop.getDesktop().open(new File("items.txt"));
+            Desktop.getDesktop().open(new File(inventoryManager.itemsPath));
         } catch (IOException ex) {
             System.out.println("An unknown error has occurred during the browse operation.");
         }
