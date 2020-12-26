@@ -70,14 +70,16 @@ public class Item extends Node<Item> {
             if (amount > lotSizing) {
                 amount = (double)amount / lotSizing % 1 == 0 ? amount : (amount / lotSizing * lotSizing) + lotSizing;
                 Inventory.amounts.put(ID, amount - firstAmount);
+                deliveries.put(week - leadTime, amount);
             }
-            else amount = lotSizing;
-            deliveries.put(week - leadTime, amount);
-            Inventory.amounts.put(ID, amount - firstAmount);
+            else {
+                amount = lotSizing;
+                deliveries.put(week - leadTime, amount);
+                Inventory.amounts.put(ID, amount - firstAmount);
+            }
         }
-        if (this.firstChild != null) this.firstChild.addDemand(week, amount);
-        if (this.nextSibling != null) this.nextSibling.addDemand(week, firstAmount);
-
+            if (this.firstChild != null) this.firstChild.addDemand(week, firstAmount * multiplier);
+            if (this.nextSibling != null) this.nextSibling.addDemand(week, firstAmount);
     }
 
     private int getAmount() {
@@ -96,32 +98,29 @@ public class Item extends Node<Item> {
         if (Inventory.plannedOrderDeliveries.containsKey(ID)) Inventory.plannedOrderDeliveries.put(ID, updateVariables(Inventory.plannedOrderDeliveries.get(ID), deliveries));
         else Inventory.plannedOrderDeliveries.put(ID, deliveries);
 
-        if (this.firstChild != null) {
-            this.firstChild.produce();
-            this.firstChild.initializeVariables();
-        }
-        if (this.nextSibling != null) {
-            this.nextSibling.produce();
-            this.nextSibling.initializeVariables();
-        }
+            if (this.firstChild != null) {
+                this.firstChild.produce();
+                this.firstChild.initializeVariables();
+            }
+
+            if (this.nextSibling != null) {
+                this.nextSibling.produce();
+                this.nextSibling.initializeVariables();
+            }
+
         Inventory.scheduledReceipts.put(ID, scheduledReceipts);
     }
 
     private Map<Integer, Integer> updateVariables(Map<Integer, Integer> existing, Map<Integer, Integer> replacement) {
-        for (Integer temp : existing.keySet()) {
-            int tempValue = existing.get(temp) != null ? existing.get(temp) : 0;
-            int tempValue2 = replacement.get(temp) != null ? replacement.get(temp) : 0;
-            existing.put(temp, tempValue + tempValue2);
+        for (Integer temp1 : existing.keySet()) {
+            int tempValue = existing.get(temp1) != null ? existing.get(temp1) : 0;
+            for (Integer temp2 : replacement.keySet()) {
+                int tempValue2 = replacement.get(temp2) != null ? replacement.get(temp2) : 0;
+                if (temp1.equals(temp2)) existing.put(temp1, tempValue + tempValue2);
+                else existing.put(temp2, tempValue2);
+            }
         }
         return existing;
-    }
-
-    public Map<Integer, Integer> getDemands() {
-        return demands;
-    }
-
-    public Map<Integer, Integer> getDeliveries() {
-        return deliveries;
     }
 
     @Override
