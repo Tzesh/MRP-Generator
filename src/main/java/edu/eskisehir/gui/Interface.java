@@ -215,8 +215,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateButtonActionPerformed
         // TODO add your handling code here:
-        Item root = (Item)Inventory.items.getRoot();
-        root.produce();
+        inventoryManager.produce();
         itemChooser.setEnabled(true);
         calculateButton.setEnabled(false);
     }//GEN-LAST:event_calculateButtonActionPerformed

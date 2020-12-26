@@ -8,7 +8,7 @@ import java.util.List;
 public class Tree<T> {
     private Node<T> root;
     private Node<T> findedNode;
-    private List<Item> items = new LinkedList<>();
+    public List<Item> items = new LinkedList<>();
 
     public Tree(Node<T> root) {
         this.root = root;

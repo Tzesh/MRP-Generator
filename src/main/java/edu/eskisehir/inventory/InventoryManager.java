@@ -69,6 +69,7 @@ public class InventoryManager {
     }
 
     public void produce() {
+        Inventory.items.getPreOrder();
         Item root = (Item)Inventory.items.getRoot();
         root.produce();
     }

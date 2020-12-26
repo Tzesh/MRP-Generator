@@ -2,8 +2,6 @@ package edu.eskisehir.utils;
 
 import edu.eskisehir.inventory.Item;
 
-import java.util.Objects;
-
 public class Node<T> {
 
     public Node<T> nextSibling;
@@ -73,23 +71,6 @@ public class Node<T> {
     public void produce() {
         Item item = (Item) this;
         item.produce();
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return ID == node.ID &&
-                Objects.equals(firstChild, node.firstChild) &&
-                Objects.equals(nextSibling, node.nextSibling) &&
-                Objects.equals(name, node.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstChild, nextSibling, name, ID);
     }
 
 

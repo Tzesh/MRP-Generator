@@ -4,6 +4,7 @@ import edu.eskisehir.utils.Node;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Item extends Node<Item> {
     Map<Integer, Integer> demands = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
@@ -27,11 +28,17 @@ public class Item extends Node<Item> {
     }
 
     public void addDemand(int week, int amount) {
-        demands.put(week, amount);
+        int preAmount = demands.getOrDefault(week, 0);
+        demands.put(week, amount + preAmount);
     }
 
     public void produce() { // we'll produce the item according to given demand information
         scheduledReceipts = Inventory.scheduledReceipts.get(ID);
+        Inventory.items.items.remove(this);
+        if (Inventory.items.items.contains(this)) {
+            hasIdentical();
+            return;
+        }
         Inventory.scheduledReceipts.remove(ID);
         for (int week = 1; week <= 10; week++) {
             int demand = demands.getOrDefault(week, 0);
@@ -52,6 +59,13 @@ public class Item extends Node<Item> {
             requirements.put(week, demand);
         }
         initializeVariables();
+    }
+
+    private void hasIdentical() {
+        Item identical = Inventory.items.items.get(Inventory.items.items.indexOf(this));
+        demands.keySet().forEach(week -> {
+            identical.addDemand(week, demands.get(week));
+        });
     }
 
     private void deliver(int week, int amount) { // to deliver items
@@ -98,14 +112,10 @@ public class Item extends Node<Item> {
     public void initializeVariables() {
         // prints out the MRP table according to given data
         // produces another item in the tree
-        if (Inventory.grossRequirements.containsKey(ID)) Inventory.grossRequirements.put(ID, updateVariables(Inventory.grossRequirements.get(ID), demands));
-        else Inventory.grossRequirements.put(ID, demands);
-        if (Inventory.netRequirements.containsKey(ID)) Inventory.netRequirements.put(ID, updateVariables(Inventory.netRequirements.get(ID), requirements));
-        else Inventory.netRequirements.put(ID, requirements);
-        if (Inventory.onHandFromPriorPeriod.containsKey(ID)) Inventory.onHandFromPriorPeriod.put(ID, updateVariables(Inventory.onHandFromPriorPeriod.get(ID), onHandFromPriorPeriod));
-        else Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
-        if (Inventory.plannedOrderDeliveries.containsKey(ID)) Inventory.plannedOrderDeliveries.put(ID, updateVariables(Inventory.plannedOrderDeliveries.get(ID), deliveries));
-        else Inventory.plannedOrderDeliveries.put(ID, deliveries);
+        Inventory.grossRequirements.put(ID, demands);
+        Inventory.netRequirements.put(ID, requirements);
+        Inventory.onHandFromPriorPeriod.put(ID, onHandFromPriorPeriod);
+        Inventory.plannedOrderDeliveries.put(ID, deliveries);
 
         if (this.firstChild != null) {
             Item child = (Item)this.firstChild;
@@ -132,5 +142,14 @@ public class Item extends Node<Item> {
     @Override
     public String toString() {
         return "Item" + ID + "(" + name + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return ID == item.ID &&
+                name.equals(item.name);
     }
 }
