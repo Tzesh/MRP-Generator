@@ -8,7 +8,7 @@ import java.util.List;
 public class Tree<T> {
     private final Node<T> root;
     private Node<T> findedNode;
-    public List<Item> items = new LinkedList<>();
+    public List<Item> itemList = new LinkedList<>();
 
     public Tree(Node<T> root) {
         this.root = root;
@@ -49,13 +49,12 @@ public class Tree<T> {
     }
 
     public void getPreOrder(Node baseNode) {
-        items.add((Item) baseNode);
+        itemList.add((Item) baseNode);
         Node child = baseNode.firstChild;
         while (child != null) {
             getPreOrder(child);
             child = child.nextSibling;
         }
     }
-
 }
 

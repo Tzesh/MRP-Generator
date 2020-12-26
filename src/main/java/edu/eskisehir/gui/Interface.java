@@ -14,17 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Interface extends javax.swing.JFrame {
-    Map<String, Integer> items = new HashMap<>();
-    InventoryManager inventoryManager = new InventoryManager(true);
+    Map<String, Integer> items = new HashMap<>(); // to access every single item more easily
+    InventoryManager inventoryManager = new InventoryManager(true); // to create an inventory
 
     public Interface() {
-        initComponents();
+        initComponents(); // default Swing components
         setConsole(console); // setting JTextArea console as default output type of the program
-        calculateButton.setEnabled(false);
-        itemTable.setEnabled(false);
-        itemChooser.removeAllItems();
-        itemChooser.addItem("Select an item");
-        itemChooser.setEnabled(false);
+        calculateButton.setEnabled(false); // setting calculate button disabled
+        itemTable.setEnabled(false); // setting item table as disabled
+        itemChooser.removeAllItems(); // removing all items from item chooser
+        itemChooser.addItem("Select an item"); // main item of item chooser has been an information text
+        itemChooser.setEnabled(false); // setting enable button disabled
     }
 
     private void setConsole(JTextArea console) { // all of the outputs will appear into JTextArea
@@ -201,8 +201,8 @@ public class Interface extends javax.swing.JFrame {
 
     private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-        inventoryManager.produce();
         setItems();
+        inventoryManager.produce();
         itemChooser.setEnabled(true);
         calculateButton.setEnabled(false);
     }
@@ -248,8 +248,8 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_setButtonActionPerformed
 
     private void setItems() {
-        for (Integer ID : Inventory.amounts.keySet()) {
-            Item item = (Item) Inventory.items.find(ID);
+        for (Item item : Inventory.items.itemList) {
+            int ID = item.getID();
             items.put(item.toString(), ID);
             itemChooser.addItem(item.toString());
         }
@@ -340,7 +340,6 @@ public class Interface extends javax.swing.JFrame {
                 new Interface().setVisible(true);
             }
         });
-
     }
 
     private javax.swing.JButton calculateButton;

@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Item extends Node<Item> {
-    Map<Integer, Integer> grossRequirements = new HashMap<Integer, Integer>(); // demand of root (Shovel Complete) item with respect to weeks
-    Map<Integer, Integer> plannedOrderDeliveries = new HashMap<>(); // deliveries needed to complete the item
-    Map<Integer, Integer> netRequirements = new HashMap<>();
-    Map<Integer, Integer> onHandFromPriorPeriod = new HashMap<>();
-    Map<Integer, Integer> scheduledReceipts = new HashMap<>();
-    int ID; // item ID of the item
-    String name; // name of the item
-    int multiplier; // how many products need to be produced when our root item will be produced
-    int leadTime; // how many weeks will take to deliver
-    int lotSizing; // lot sizing of item
+    private Map<Integer, Integer> grossRequirements = new HashMap<Integer, Integer>(); // gross requirements of the item
+    private Map<Integer, Integer> plannedOrderDeliveries = new HashMap<>(); // deliveries needed to complete the item
+    private Map<Integer, Integer> netRequirements = new HashMap<>(); // net requirements of the
+    private Map<Integer, Integer> onHandFromPriorPeriod = new HashMap<>(); // information about on hand from prior period
+    private Map<Integer, Integer> scheduledReceipts = new HashMap<>(); // scheduled receipts information week by week
+    private int ID; // item ID of the item
+    private String name; // name of the item
+    private int multiplier; // how many products need to be produced when our root item will be produced
+    private int leadTime; // how many weeks will take to deliver
+    private int lotSizing; // lot sizing of item
 
     public Item(int ID, String name, int leadTime, int lotSizing, int multiplier) {
         super(name, ID);
@@ -33,8 +33,8 @@ public class Item extends Node<Item> {
 
     public void produce() { // we'll produce the item according to given demand information
         scheduledReceipts = Inventory.scheduledReceipts.get(ID);
-        Inventory.items.items.remove(this);
-        if (Inventory.items.items.contains(this)) {
+        Inventory.items.itemList.remove(this);
+        if (Inventory.items.itemList.contains(this)) {
             hasIdentical();
             return;
         }
@@ -60,7 +60,7 @@ public class Item extends Node<Item> {
     }
 
     private void hasIdentical() {
-        Item identical = Inventory.items.items.get(Inventory.items.items.indexOf(this));
+        Item identical = Inventory.items.itemList.get(Inventory.items.itemList.indexOf(this));
         grossRequirements.keySet().forEach(week -> {
             identical.addDemand(week, grossRequirements.get(week));
         });

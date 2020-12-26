@@ -59,6 +59,7 @@ public class InventoryManager {
                 }
             }
         });
+        Inventory.items.getPreOrder();
     }
 
     public void setDemands(Map<Integer, Integer> demands) {
@@ -66,7 +67,6 @@ public class InventoryManager {
     }
 
     public void produce() {
-        Inventory.items.getPreOrder();
         Item root = (Item) Inventory.items.getRoot();
         root.produce();
     }
