@@ -277,7 +277,6 @@ public class Interface extends javax.swing.JFrame {
     }
 
     private void setMRP(int ID) {
-        System.out.println(Inventory.onHandFromPriorPeriod.get(13122).get(4));
         clear((DefaultTableModel) itemTable.getModel());
         int[] grossRequirements = getMRPValue(Inventory.grossRequirements.get(ID));
         setValues(grossRequirements, 0);

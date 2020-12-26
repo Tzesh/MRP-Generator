@@ -40,14 +40,13 @@ public class Item extends Node<Item> {
             if (scheduledReceipts != null && scheduledReceipts.containsKey(week)) {
                 amount += scheduledReceipts.get(week);
             }
-
             if (amount >= demand) {
+                setAmount(amount - demand);
                 demand = 0;
-                Inventory.amounts.put(ID, amount - demand);
             }
             else {
                 demand -= amount;
-                Inventory.amounts.put(ID, 0);
+                setAmount(0);
                 deliver(week, demand);
             }
             requirements.put(week, demand);
@@ -61,7 +60,6 @@ public class Item extends Node<Item> {
             return;
         }
         int firstAmount = amount;
-        amount *= multiplier;
         requirements.put(week, amount);
         if (lotSizing == 0) {
             deliveries.put(week - leadTime, amount); // we'll use this data in MRP, if lotSizing = 0 that means lotSizing is L4L and amount of delivery is not important
@@ -69,21 +67,32 @@ public class Item extends Node<Item> {
         else {
             if (amount > lotSizing) {
                 amount = (double)amount / lotSizing % 1 == 0 ? amount : (amount / lotSizing * lotSizing) + lotSizing;
-                Inventory.amounts.put(ID, amount - firstAmount);
                 deliveries.put(week - leadTime, amount);
             }
             else {
                 amount = lotSizing;
                 deliveries.put(week - leadTime, amount);
-                Inventory.amounts.put(ID, amount - firstAmount);
+            }
+            setAmount(amount - firstAmount);
+        }
+        if (this.firstChild != null) {
+            Item child = (Item)this.firstChild;
+            child.addDemand(week - leadTime, amount * child.multiplier);
+            while (child.nextSibling != null) {
+                child = (Item)child.nextSibling;
+                child.addDemand(week - leadTime, amount * child.multiplier);
             }
         }
-            if (this.firstChild != null) this.firstChild.addDemand(week, firstAmount * multiplier);
-            if (this.nextSibling != null) this.nextSibling.addDemand(week, firstAmount);
     }
 
     private int getAmount() {
-        return Inventory.amounts.get(this.ID) == null ? 0 : Inventory.amounts.get(this.ID);
+        if (Inventory.amounts.containsKey(this.ID)) return Inventory.amounts.get(this.ID);
+        Inventory.amounts.put(ID, 0);
+        return 0;
+    }
+
+    private void setAmount(int amount) {
+        Inventory.amounts.put(ID, amount);
     }
 
     public void initializeVariables() {
@@ -98,28 +107,25 @@ public class Item extends Node<Item> {
         if (Inventory.plannedOrderDeliveries.containsKey(ID)) Inventory.plannedOrderDeliveries.put(ID, updateVariables(Inventory.plannedOrderDeliveries.get(ID), deliveries));
         else Inventory.plannedOrderDeliveries.put(ID, deliveries);
 
-            if (this.firstChild != null) {
-                this.firstChild.produce();
-                this.firstChild.initializeVariables();
+        if (this.firstChild != null) {
+            Item child = (Item)this.firstChild;
+            child.produce();
+            while (child.nextSibling != null) {
+                child = (Item)child.nextSibling;
+                child.produce();
             }
-
-            if (this.nextSibling != null) {
-                this.nextSibling.produce();
-                this.nextSibling.initializeVariables();
-            }
+        }
 
         Inventory.scheduledReceipts.put(ID, scheduledReceipts);
     }
 
     private Map<Integer, Integer> updateVariables(Map<Integer, Integer> existing, Map<Integer, Integer> replacement) {
-        for (Integer temp1 : existing.keySet()) {
-            int tempValue = existing.get(temp1) != null ? existing.get(temp1) : 0;
             for (Integer temp2 : replacement.keySet()) {
                 int tempValue2 = replacement.get(temp2) != null ? replacement.get(temp2) : 0;
-                if (temp1.equals(temp2)) existing.put(temp1, tempValue + tempValue2);
+                int tempValue1 = replacement.get(temp2) != null ? replacement.get(temp2) : 0;
+                if (existing.containsKey(temp2)) existing.put(temp2, tempValue1 + tempValue2);
                 else existing.put(temp2, tempValue2);
             }
-        }
         return existing;
     }
 

@@ -65,8 +65,7 @@ public class InventoryManager {
     }
 
     public void setDemands(Map<Integer, Integer> demands) {
-        Item root = (Item)Inventory.items.getRoot();
-        for (Integer week : demands.keySet()) root.addDemand(week, demands.get(week));
+        for (Integer week : demands.keySet()) Inventory.items.getRoot().addDemand(week, demands.get(week));
     }
 
     public void produce() {
