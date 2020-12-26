@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package edu.eskisehir.gui;
 
 import edu.eskisehir.inventory.Inventory;
@@ -5,6 +10,7 @@ import edu.eskisehir.inventory.InventoryManager;
 import edu.eskisehir.inventory.Item;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
@@ -13,18 +19,27 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Tzesh
+ */
 public class Interface extends javax.swing.JFrame {
-    Map<String, Integer> items = new HashMap<>(); // to access every single item more easily
-    InventoryManager inventoryManager = new InventoryManager(true); // to create an inventory
+    Map<String, Integer> items = new HashMap<>();
+    InventoryManager inventoryManager = new InventoryManager(true);
 
+
+    /**
+     * Creates new form Interface
+     */
     public Interface() {
-        initComponents(); // default Swing components
+        initComponents();
         setConsole(console); // setting JTextArea console as default output type of the program
-        calculateButton.setEnabled(false); // setting calculate button disabled
-        itemTable.setEnabled(false); // setting item table as disabled
-        itemChooser.removeAllItems(); // removing all items from item chooser
-        itemChooser.addItem("Select an item"); // main item of item chooser has been an information text
-        itemChooser.setEnabled(false); // setting enable button disabled
+        calculateButton.setEnabled(false);
+        itemTable.setEnabled(false);
+        itemChooser.removeAllItems();
+        itemChooser.addItem("Select an item");
+        itemChooser.setEnabled(false);
+        centerTable(itemTable);
+        centerTable(demandTable);
     }
 
     private void setConsole(JTextArea console) { // all of the outputs will appear into JTextArea
@@ -32,6 +47,12 @@ public class Interface extends javax.swing.JFrame {
         PrintStream ps = new PrintStream(taos);
         System.setOut(ps);
         System.setErr(ps);
+    }
+
+    private void centerTable(JTable table) {
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.setDefaultRenderer(Integer.class, centerRenderer);
     }
 
 
@@ -74,33 +95,52 @@ public class Interface extends javax.swing.JFrame {
                         "", "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
                 }
         ) {
-            final Class[] types = new Class[]{
-                    java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            Class[] types = new Class[]{
+                    java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean[]{
+                    false, false, false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
         });
         jScrollPane2.setViewportView(itemTable);
         if (itemTable.getColumnModel().getColumnCount() > 0) {
+            itemTable.getColumnModel().getColumn(0).setResizable(false);
             itemTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+            itemTable.getColumnModel().getColumn(1).setResizable(false);
+            itemTable.getColumnModel().getColumn(2).setResizable(false);
             itemTable.getColumnModel().getColumn(2).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(3).setResizable(false);
             itemTable.getColumnModel().getColumn(3).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(4).setResizable(false);
             itemTable.getColumnModel().getColumn(4).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(5).setResizable(false);
             itemTable.getColumnModel().getColumn(5).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(6).setResizable(false);
             itemTable.getColumnModel().getColumn(6).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(7).setResizable(false);
             itemTable.getColumnModel().getColumn(7).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(8).setResizable(false);
             itemTable.getColumnModel().getColumn(8).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(9).setResizable(false);
             itemTable.getColumnModel().getColumn(9).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(10).setResizable(false);
             itemTable.getColumnModel().getColumn(10).setPreferredWidth(20);
+            itemTable.getColumnModel().getColumn(11).setResizable(false);
             itemTable.getColumnModel().getColumn(11).setPreferredWidth(20);
         }
 
         console.setEditable(false);
         console.setColumns(20);
         console.setRows(5);
-        console.setText("Default items are ready if you want to take a look at or edit them you can press edit button.\nOnce you've filled your demands, you can press set and then press calculate to see MRP tables of all items.");
+        console.setText("Default items are ready if you want to take a look at or edit them you can press edit button. Do not forget to save them.\nOnce you've filled your demands, you can press set and then press calculate to see MRP tables of all items.\n");
         jScrollPane3.setViewportView(console);
 
         calculateButton.setText("Calculate");
@@ -139,7 +179,7 @@ public class Interface extends javax.swing.JFrame {
                         "Period", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
                 }
         ) {
-            final Class[] types = new Class[]{
+            Class[] types = new Class[]{
                     java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
@@ -150,7 +190,7 @@ public class Interface extends javax.swing.JFrame {
         jScrollPane1.setViewportView(demandTable);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        jLabel1.setText("MRP Designer");
+        jLabel1.setText("MRP Generator");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -200,11 +240,11 @@ public class Interface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void calculateButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
         setItems();
         inventoryManager.produce();
         itemChooser.setEnabled(true);
         calculateButton.setEnabled(false);
+        System.out.println("MRP tables have been calculated, you can look at each MRP table of item via selecting.");
     }
 
     private void itemChooserActionPerformed(java.awt.event.ActionEvent evt) {
@@ -215,11 +255,11 @@ public class Interface extends javax.swing.JFrame {
         if (itemChooser.getSelectedItem() != null) {
             int itemID = items.get(itemChooser.getSelectedItem());
             Item item = (Item) Inventory.items.find(itemID);
-            setMRP(item.getID(), item.getLeadTime());
+            setMRP(item.getID(), item.getLeadTime(), item.getLotSizing());
         }
-    }//GEN-LAST:event_itemChooserActionPerformed
+    }
 
-    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             Desktop.getDesktop().open(new File("items.txt"));
         } catch (IOException ex) {
@@ -227,9 +267,9 @@ public class Interface extends javax.swing.JFrame {
         }
         System.out.println("Editing is not mandatory, you can always set and calculate the default values.");
         editButton.setEnabled(false);
-    }//GEN-LAST:event_editButtonActionPerformed
+    }
 
-    private void setButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setButtonActionPerformed
+    private void setButtonActionPerformed(java.awt.event.ActionEvent evt) {
         int[] demands = getRowAt(0);
         if (demands == null) {
             System.out.println("Please set demands firstly.");
@@ -240,12 +280,12 @@ public class Interface extends javax.swing.JFrame {
             if (demands[week] != 0) demandsPerWeek.put(week, demands[week]);
         }
         inventoryManager.setDemands(demandsPerWeek);
-        System.out.println("Required information has been loaded, you can process now.");
+        System.out.println("Required information has been loaded, you can step onto calculate now.");
         calculateButton.setEnabled(true);
         setButton.setEnabled(false);
         editButton.setEnabled(false);
         demandTable.setEnabled(false);
-    }//GEN-LAST:event_setButtonActionPerformed
+    }
 
     private void setItems() {
         for (Item item : Inventory.items.itemList) {
@@ -264,8 +304,9 @@ public class Interface extends javax.swing.JFrame {
         }
     }
 
-    private void setMRP(int ID, int leadTime) {
+    private void setMRP(int ID, int leadTime, int lotSizing) {
         clear((DefaultTableModel) itemTable.getModel());
+        setRequiredInformation(ID, leadTime, lotSizing);
         int[] grossRequirements = getMRPValue(Inventory.grossRequirements.get(ID));
         setValues(grossRequirements, 0, leadTime);
         if (Inventory.scheduledReceipts.get(ID) != null) {
@@ -279,6 +320,14 @@ public class Interface extends javax.swing.JFrame {
         int[] plannedOrderDeliveries = getMRPValue(Inventory.plannedOrderDeliveries.get(ID));
         setValues(plannedOrderDeliveries, 5, leadTime);
     }
+
+    private void setRequiredInformation(int ID, int leadTime, int lotSizing) {
+        itemTable.setValueAt("ITEM:" + ID, 0, 0);
+        itemTable.setValueAt("LT:" + leadTime, 2, 0);
+        itemTable.setValueAt(lotSizing == 0 ? "Q:L4L" : "Q:Mul of " + lotSizing, 4, 0);
+    }
+
+
 
     private void setValues(int[] values, int row, int leadTime) {
         boolean isRecursive = false;
@@ -334,14 +383,45 @@ public class Interface extends javax.swing.JFrame {
         return count != 0 ? result : null;
     }
 
-    public static void main(String[] args) {
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+         */
+
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        //</editor-fold>
+
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Interface().setVisible(true);
             }
         });
+
     }
 
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton calculateButton;
     private javax.swing.JTextArea console;
     private javax.swing.JTable demandTable;
@@ -353,4 +433,5 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton setButton;
+    // End of variables declaration//GEN-END:variables
 }

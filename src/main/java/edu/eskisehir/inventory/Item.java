@@ -140,4 +140,8 @@ public class Item extends Node<Item> {
         return ID == item.ID &&
                 name.equals(item.name);
     }
+
+    public int getLotSizing() {
+        return lotSizing;
+    }
 }
