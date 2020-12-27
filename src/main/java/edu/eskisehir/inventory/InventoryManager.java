@@ -3,7 +3,6 @@ package edu.eskisehir.inventory;
 import edu.eskisehir.utils.Tree;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
 public class InventoryManager {
     public String itemsPath = null;
 
-    public InventoryManager(boolean setItems) {
+    public InventoryManager(boolean setItems) { // if we don't want to setItems while initializing InventoryManager it's possible
         if (!setItems) return;
         try {
             setItems();
@@ -22,7 +21,7 @@ public class InventoryManager {
         }
     }
 
-    private void setItems() throws IOException {
+    private void setItems() throws IOException { // simply gets the information in items.txt if it's doesn't exist just creates a temporary file than uses it
         File items = new File("items.txt");
         if (!items.exists()) {
             InputStream input = getClass().getResourceAsStream("/constants/items.txt");
@@ -53,8 +52,7 @@ public class InventoryManager {
                 int lotSizing = Integer.parseInt(information[7]);
                 int multiplier = Integer.parseInt(information[8]);
                 if (rootID == 0) {
-                    Item root = new Item(itemID, name, leadTime, lotSizing, multiplier);
-                    Inventory.amounts.put(itemID, amount);
+                    Item root = new Item(itemID, name, amount, leadTime, lotSizing, multiplier);
                     if (arrivalOnWeek != 0 && scheduledReceipt != 0) {
                         Map<Integer, Integer> receipts = new HashMap<Integer, Integer>() {{
                             put(arrivalOnWeek, scheduledReceipt);
@@ -63,8 +61,7 @@ public class InventoryManager {
                     }
                     Inventory.items = new Tree(root);
                 } else {
-                    Inventory.items.find(rootID).addChild(new Item(itemID, name, leadTime, lotSizing, multiplier));
-                    Inventory.amounts.put(itemID, amount);
+                    Inventory.items.find(rootID).addChild(new Item(itemID, name, amount, leadTime, lotSizing, multiplier));
                     if (arrivalOnWeek != 0 && scheduledReceipt != 0) {
                         Map<Integer, Integer> receipts = new HashMap<Integer, Integer>() {{
                             put(arrivalOnWeek, scheduledReceipt);
@@ -77,37 +74,11 @@ public class InventoryManager {
         Inventory.items.getPreOrder();
     }
 
-    private File createFile(String fileName) throws IOException {
-        File file = null;
-        String resource = fileName;
-        URL res = getClass().getResource(resource);
-        if (res.getProtocol().equals("jar")) {
-            InputStream input = getClass().getResourceAsStream(resource);
-            file = File.createTempFile("tempfile", ".tmp");
-            OutputStream out = new FileOutputStream(file);
-            int read;
-            byte[] bytes = new byte[1024];
-
-            while ((read = input.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            out.close();
-            file.deleteOnExit();
-        } else {
-            file = new File(res.getFile());
-        }
-
-        if (file != null && !file.exists()) {
-            throw new RuntimeException("Error: File " + file + " not found!");
-        }
-        return file;
-    }
-
-    public void setDemands(Map<Integer, Integer> demands) {
+    public void setDemands(Map<Integer, Integer> demands) { // to set demands of the root according to table in Interface
         for (Integer week : demands.keySet()) Inventory.items.getRoot().addDemand(week, demands.get(week));
     }
 
-    public void produce() {
+    public void produce() { // to produce the root
         Item root = (Item) Inventory.items.getRoot();
         root.produce();
     }

@@ -2,13 +2,13 @@ package edu.eskisehir.utils;
 
 import edu.eskisehir.inventory.Item;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Tree<T> {
-    private final Node<T> root;
-    private Node<T> findedNode;
-    public List<Item> itemList = new LinkedList<>();
+public class Tree<T> { // our generic m-ary Tree design (LinkedList implementation)
+    private final Node<T> root; // root of the tree
+    private Node<T> findedNode; // if we're looking for the same node that would be make things easier
+    public List<Item> itemList = new ArrayList<>(); // to use items
 
     public Tree(Node<T> root) {
         this.root = root;
@@ -18,7 +18,7 @@ public class Tree<T> {
         return root;
     }
 
-    public void findNode(int id) {
+    public void findNode(int id) { // to find node
         if (root.getID() == id) {
             findedNode = root;
         } else {
@@ -26,7 +26,7 @@ public class Tree<T> {
         }
     }
 
-    public void findNode(Node<T> node, int id) {
+    public void findNode(Node<T> node, int id) { // to find node
         if (node.getID() == id) {
             findedNode = node;
             return;
@@ -39,16 +39,16 @@ public class Tree<T> {
         }
     }
 
-    public Node<T> find(int id) {
+    public Node<T> find(int id) { // to find node
         findNode(id);
         return findedNode;
     }
 
     public void getPreOrder() {
         getPreOrder(root);
-    }
+    } // basically iterates preordered in tree
 
-    public void getPreOrder(Node baseNode) {
+    public void getPreOrder(Node baseNode) { // to save all of the nodes once and forget about traversing between them just using the ArrayList
         itemList.add((Item) baseNode);
         Node child = baseNode.firstChild;
         while (child != null) {

@@ -50,7 +50,7 @@ public class Interface extends javax.swing.JFrame {
         System.setErr(ps);
     }
 
-    private void centerTable(JTable table) {
+    private void centerTable(JTable table) { // centering values of cells to make tables easy to understand
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         table.setDefaultRenderer(Integer.class, centerRenderer);

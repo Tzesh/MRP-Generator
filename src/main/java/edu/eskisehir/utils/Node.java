@@ -2,9 +2,9 @@ package edu.eskisehir.utils;
 
 import edu.eskisehir.inventory.Item;
 
-public class Node<T> {
+public class Node<T> { // our generic Node design
 
-    public Node<T> nextSibling;
+    public Node<T> nextSibling; // access modifiers both nextSibling and firstChild are set public to make things easier
     public Node<T> firstChild;
     String name;
     int ID;
@@ -18,25 +18,13 @@ public class Node<T> {
 
     public boolean hasChild() {
         return firstChild != null;
-    }
+    } // to check Node has child
 
     public String toString() {
         return this.name + "(" + this.ID + ")";
-    }
+    } // used in Interface
 
-    public Node<T> getChild(int ID) {
-        Node<T> sibling = this.firstChild;
-        while (sibling.nextSibling != null) {
-            if (sibling.getID() == ID) {
-                return sibling;
-            }
-            sibling = sibling.nextSibling;
-        }
-
-        return null;
-    }
-
-    public void addChild(Node<T> n) {
+    public void addChild(Node<T> n) { // we are using this when we are defining relationships between nodes and adding nodes into Tree
         if (!this.hasChild()) {
             this.firstChild = n;
             return;
@@ -56,19 +44,19 @@ public class Node<T> {
 
     public int getID() {
         return this.ID;
-    }
+    } // used in Interface
 
-    public void addDemand(int week, int amount) {
+    public void addDemand(int week, int amount) { // to access easily addDemand method from Node class
         Item item = (Item) this;
         item.addDemand(week, amount);
     }
 
-    public void initializeVariables() {
+    public void initializeVariables() { // to access easily initializeVariables method from Node class
         Item item = (Item) this;
         item.initializeVariables();
     }
 
-    public void produce() {
+    public void produce() { // to access easily produce method from Node class
         Item item = (Item) this;
         item.produce();
     }
